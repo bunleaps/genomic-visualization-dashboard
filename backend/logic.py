@@ -1,3 +1,5 @@
+import requests
+
 NUCLEOTIDE_PROPERTIES = {
     "A": {"label": "Adenine"},
     "T": {"label": "Thymine"},
@@ -8,6 +10,9 @@ NUCLEOTIDE_PROPERTIES = {
 
 
 def process_nucleotide_sequence(sequence: str):
+    # Remove any whitespace (spaces, tabs, newlines) from the input sequence
+    sequence = "".join(sequence.split())
+
     visualization_data = []
 
     for i, base in enumerate(sequence.upper()):
@@ -24,11 +29,23 @@ def process_nucleotide_sequence(sequence: str):
     return visualization_data
 
 
+def fetch_data_from_url(url):
+    """Fetches raw data content from a given URL."""
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+        return response.text
+    except requests.RequestException as e:
+        print(f"Error fetching data from URL: {e}")
+        return None
+
+
 def get_nucleotide_counts(sequence: str) -> dict:
     """
     Calculates the count and frequency of A, T, G, C, and N (unknown) nucleotides.
     Returns a dictionary with counts and frequencies.
     """
+    sequence = "".join(sequence.split())
     sequence = sequence.upper()
     total_length = len(sequence)
     counts = {}
@@ -55,6 +72,7 @@ def calculate_gc_content(sequence: str) -> float:
     Excludes 'N' (unknown bases) from the total length used for the percentage calculation.
     Returns the GC-content as a percentage (0.0 to 100.0).
     """
+    sequence = "".join(sequence.split())
     sequence = sequence.upper()
     g_count = sequence.count("G")
     c_count = sequence.count("C")
@@ -75,6 +93,7 @@ def get_reverse_complement(sequence: str) -> str:
     Assumes T pairs with A, and C pairs with G. 'N' complements to 'N'.
     Returns the reverse complementary strand (5' to 3').
     """
+    sequence = "".join(sequence.split())
     sequence = sequence.upper()
 
     # Define the complement mapping (DNA, with N mapping to N)
