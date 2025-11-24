@@ -55,26 +55,35 @@ def ingest_fasta_url():
         return jsonify({"error": "Failed to retrieve content from the URL."}), 400
 
     try:
-        # Use StringIO to treat the string content as a file-like object for SeqIO
         handle = StringIO(file_content)
-
-        # Parse all sequences from the FASTA file
         sequences_data = {}
-        total_bases = 0
+        total_bases_file = 0
 
         for record in SeqIO.parse(handle, "fasta"):
             raw_sequence = str(record.seq)
 
-            # --- CRITICAL STEP: Call your processing function here ---
+            # 1. Visualization Data Preparation
             processed_seq_data = process_nucleotide_sequence(raw_sequence)
+
+            # 2. Feature Extraction (Calculating Metrics)
+            nucleotide_metrics = get_nucleotide_counts(raw_sequence)
+            gc_content = calculate_gc_content(raw_sequence)
+            reverse_complement = get_reverse_complement(raw_sequence)
 
             sequences_data[record.id] = {
                 "sequence_id": record.id,
                 "description": record.description,
                 "length": len(raw_sequence),
-                "visualization_data": processed_seq_data,  # The structured array
+                "gc_content": gc_content,  # New Feature
+                "nucleotide_counts": nucleotide_metrics["counts"],  # New Feature
+                "nucleotide_frequencies": nucleotide_metrics[
+                    "frequencies"
+                ],  # New Feature
+                # The reverse complement can be used for contextual analysis
+                "reverse_complement_preview": reverse_complement[:50] + "...",
+                "visualization_data": processed_seq_data,  # Structured array for plotting
             }
-            total_bases += len(raw_sequence)
+            total_bases_file += len(raw_sequence)
 
         if not sequences_data:
             return (
@@ -84,22 +93,19 @@ def ingest_fasta_url():
                 400,
             )
 
-        # Example overall statistic
-        avg_length = total_bases / len(sequences_data)
+        avg_length = total_bases_file / len(sequences_data)
 
-        # Return the structured data array and summary statistics
+        # The final response includes comprehensive statistics and visualization data
         return (
             jsonify(
                 {
                     "status": "success",
-                    "message": f"FASTA data ingested and processed. {len(sequences_data)} sequences detected.",
-                    "url": url,
+                    "message": f"FASTA data ingested and analyzed. {len(sequences_data)} sequences detected.",
                     "summary": {
                         "total_sequences": len(sequences_data),
-                        "total_bases": total_bases,
+                        "total_bases": total_bases_file,
                         "avg_seq_length": f"{avg_length:.2f}",
                     },
-                    # Return the processed data structure
                     "processed_sequences": sequences_data,
                 }
             ),
