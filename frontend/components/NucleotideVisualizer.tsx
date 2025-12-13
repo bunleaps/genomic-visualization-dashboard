@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import useSearchStore from "@/store/useSearchStore";
+import { FaRegSadCry } from "react-icons/fa";
 
 export interface NucleotideData {
   index: number;
@@ -38,39 +39,34 @@ const NucleotideVisualizer: React.FC = () => {
     }
   }, [searchTerm]);
 
+  if (!sequenceData || sequenceData.length == 0) {
+    return (
+      <div className="p-8 flex flex-col text-center justify-center items-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+        <FaRegSadCry size={32} className="mb-4" />
+        <p className="font-medium">No analysis yet</p>
+        <p className="text-sm">Submit a sequence to see statistics</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4">
-      {sequenceData.length === 0 ? (
-        <div className="p-8 text-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
-          <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <p className="font-medium">No sequence to visualize yet</p>
-          <p className="text-sm">Submit a sequence above to see the nucleotide visualization</p>
-        </div>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          {sequenceData.map((nuc) => {
-            const baseChar = String(nuc.base ?? "").toUpperCase();
-            const bgClass = BASE_BG_CLASSES[baseChar] ?? "bg-gray-100";
+      <div className="flex flex-wrap gap-2">
+        {sequenceData.map((nuc) => {
+          const baseChar = String(nuc.base ?? "").toUpperCase();
+          const bgClass = BASE_BG_CLASSES[baseChar] ?? "bg-gray-100";
 
-            return (
-              <div
-                key={nuc.index}
-                className={`${bgClass} p-2 rounded text-sm font-bold text-white shadow-sm hover:shadow-md transition-shadow`}
-                title={`Position ${nuc.index}: ${nuc.label}`}
-              >
-                {baseChar}
-              </div>
-            );
-          })}
-        </div>
-      )}
+          return (
+            <div
+              key={nuc.index}
+              className={`${bgClass} p-2 rounded text-sm font-bold text-white shadow-sm hover:shadow-md transition-shadow`}
+              title={`Position ${nuc.index}: ${nuc.label}`}
+            >
+              {baseChar}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
