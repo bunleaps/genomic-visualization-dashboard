@@ -2,6 +2,9 @@ import SearchInput from "@/components/SearchInput";
 import NucleotideVisualizer from "@/components/NucleotideVisualizer";
 import NucleotideSimpleStats from "@/components/NucleotideSimpleStats";
 import { FaDna } from "react-icons/fa";
+import Link from "next/link";
+import { LuConstruction } from "react-icons/lu";
+import { BiHome } from "react-icons/bi";
 
 export default async function Home() {
   return (
@@ -22,26 +25,24 @@ export default async function Home() {
       </header>
 
       {/* main */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="space-y-8">
-          {/* search */}
-          <section className="bg-white rounded-xl shadow-md p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Upload or Enter Sequence</h2>
-            <SearchInput />
-          </section>
-
-          {/* stats */}
-          <section className="bg-white rounded-xl shadow-md p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Sequence Analysis</h2>
-            <NucleotideSimpleStats />
-          </section>
-
-          {/* vis */}
-          <section className="bg-white rounded-xl shadow-md p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Nucleotide Visualization</h2>
-            <NucleotideVisualizer />
-          </section>
+      <main className="flex-grow flex flex-col items-center justify-center px-4 text-center py-4.75 mt-8">
+        <div className="bg-blue-100 p-6 rounded-full mb-6">
+          <LuConstruction className="w-16 h-16" />
         </div>
+
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
+        <p className="text-gray-600 max-w-md mb-8">
+          Sorry, the page you are looking for either does not exist or is currently going under maintenance. Please try
+          again.
+        </p>
+
+        <Link
+          href="/"
+          className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          <BiHome className="w-5 h-5" />
+          Navigate to Page
+        </Link>
       </main>
 
       {/* footer */}

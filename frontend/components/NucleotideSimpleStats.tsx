@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import useSearchStore from "@/store/useSearchStore";
+import { FaRegSadCry } from "react-icons/fa";
 
 export interface NucleotideCounts {
   counts: Record<string, number>;
@@ -50,15 +51,8 @@ const NucleotideSimpleStats: React.FC = () => {
 
   if (!stats) {
     return (
-      <div className="p-8 text-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
-        <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+      <div className="p-8 flex flex-col text-center justify-center items-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+        <FaRegSadCry size={32} className="mb-4" />
         <p className="font-medium">No analysis yet</p>
         <p className="text-sm">Submit a sequence to see statistics</p>
       </div>
