@@ -1,4 +1,21 @@
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function FeatureTable({
   selectedFeatures,
@@ -51,174 +68,143 @@ export default function FeatureTable({
   };
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <div className="flex items-center justify-between mb-6">
+    <Card className="bg-slate-800 border-slate-700">
+      <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-white">
-            Features in{" "}
-            <span className="text-blue-400">{selectedSequence}</span>
-          </h3>
-          <p className="text-gray-400 text-sm mt-1">
+          <CardTitle className="text-2xl font-bold text-white">
+            Features in <span className="text-blue-400">{selectedSequence}</span>
+          </CardTitle>
+          <CardDescription className="text-gray-400 mt-1">
             Showing {startIndex + 1} to{" "}
             {Math.min(endIndex, selectedFeatures.length)} of{" "}
             <span className="font-semibold text-blue-400">
               {selectedFeatures.length}
             </span>{" "}
             features
-          </p>
+          </CardDescription>
         </div>
-        <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+        <Badge variant="secondary" className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 text-sm">
           {selectedFeatures.length} found
-        </span>
-      </div>
+        </Badge>
+      </CardHeader>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b-2 border-slate-600 bg-slate-900">
-            <tr>
-              <th className="text-left py-4 px-4 font-bold text-white">
-                Feature ID
-              </th>
-              <th className="text-left py-4 px-4 font-bold text-white">Type</th>
-              <th className="text-center py-4 px-4 font-bold text-white">
-                Start (bp)
-              </th>
-              <th className="text-center py-4 px-4 font-bold text-white">
-                End (bp)
-              </th>
-              <th className="text-center py-4 px-4 font-bold text-white">
-                Length (bp)
-              </th>
-              <th className="text-center py-4 px-4 font-bold text-white">
-                Strand
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentFeatures.map((feature) => {
-              const length = feature.length || feature.end - feature.start;
-              const typeClass =
-                {
-                  gene: "bg-blue-600",
-                  CDS: "bg-red-600",
-                  ORF: "bg-purple-600",
-                  GC_rich_region: "bg-cyan-600",
-                  CpG_island: "bg-green-600",
-                  tandem_repeat: "bg-orange-600",
-                }[feature.type] || "bg-gray-600";
+      <CardContent>
+        <div className="rounded-md border border-slate-700 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-slate-900">
+              <TableRow className="border-slate-700 hover:bg-slate-900">
+                <TableHead className="text-white font-bold w-[120px] pl-4">Feature ID</TableHead>
+                <TableHead className="text-white font-bold w-[120px]">Type</TableHead>
+                <TableHead className="text-white font-bold text-center">Start (bp)</TableHead>
+                <TableHead className="text-white font-bold text-center">End (bp)</TableHead>
+                <TableHead className="text-white font-bold text-center">Length (bp)</TableHead>
+                <TableHead className="text-white font-bold text-center">Strand</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentFeatures.map((feature) => {
+                const length = feature.length || feature.end - feature.start;
+                const typeClass =
+                  {
+                    gene: "bg-blue-600 hover:bg-blue-700",
+                    CDS: "bg-red-600 hover:bg-red-700",
+                    ORF: "bg-purple-600 hover:bg-purple-700",
+                    GC_rich_region: "bg-cyan-600 hover:bg-cyan-700",
+                    CpG_island: "bg-green-600 hover:bg-green-700",
+                    tandem_repeat: "bg-orange-600 hover:bg-orange-700",
+                  }[feature.type] || "bg-gray-600 hover:bg-gray-700";
 
-              // Build tooltip with all available properties
-              const tooltipParts = [feature.type];
-              if (feature.frame !== undefined)
-                tooltipParts.push(`Frame: ${feature.frame}`);
-              if (feature.gc_content !== undefined)
-                tooltipParts.push(
-                  `GC: ${(feature.gc_content * 100).toFixed(2)}%`
+                const tooltipParts = [feature.type];
+                if (feature.frame !== undefined) tooltipParts.push(`Frame: ${feature.frame}`);
+                if (feature.gc_content !== undefined) tooltipParts.push(`GC: ${(feature.gc_content * 100).toFixed(2)}%`);
+
+                return (
+                  <TableRow
+                    key={feature.id}
+                    className="border-slate-700 hover:bg-slate-700/50 transition-colors"
+                    title={tooltipParts.join(" | ")}
+                  >
+                    <TableCell className="pl-4 font-mono text-blue-400 font-medium">
+                      {feature.id}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`${typeClass} text-white border-0`}>
+                        {feature.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center text-gray-300">
+                      {feature.start.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-center text-gray-300">
+                      {feature.end.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-center font-semibold text-green-400">
+                      {length.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span
+                        className={`font-bold text-lg ${
+                          feature.strand === "+" ? "text-blue-400" : "text-red-400"
+                        }`}
+                      >
+                        {feature.strand}
+                      </span>
+                    </TableCell>
+                  </TableRow>
                 );
-              if (feature.obs_exp_ratio !== undefined)
-                tooltipParts.push(`O/E: ${feature.obs_exp_ratio}`);
-              if (feature.repeat_count !== undefined)
-                tooltipParts.push(`Repeats: ${feature.repeat_count}`);
-              if (feature.unit_length !== undefined)
-                tooltipParts.push(`Unit: ${feature.unit_length}bp`);
-              if (feature.repeat_unit !== undefined)
-                tooltipParts.push(`Pattern: ${feature.repeat_unit}`);
-
-              return (
-                <tr
-                  key={feature.id}
-                  className="border-b border-slate-700 hover:bg-slate-700 transition-colors"
-                  title={tooltipParts.join(" | ")}
-                >
-                  <td className="py-4 px-4 font-mono text-blue-400 hover:text-blue-300">
-                    {feature.id}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold text-white ${typeClass}`}
-                    >
-                      {feature.type}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-center text-gray-300">
-                    {feature.start}
-                  </td>
-                  <td className="py-4 px-4 text-center text-gray-300">
-                    {feature.end}
-                  </td>
-                  <td className="py-4 px-4 text-center font-semibold text-green-400">
-                    {length}
-                  </td>
-                  <td className="py-4 px-4 text-center">
-                    <span
-                      className={`font-bold text-lg ${
-                        feature.strand === "+"
-                          ? "text-blue-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {feature.strand}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2">
-          {/* Previous Button */}
-          <button
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-2 rounded bg-slate-700 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition"
-          >
-            ← Previous
-          </button>
-
-          {/* Page Numbers */}
-          <div className="flex gap-1">
-            {getPageNumbers().map((page, idx) => (
-              <button
-                key={idx}
-                onClick={() => typeof page === "number" && setCurrentPage(page)}
-                disabled={typeof page !== "number"}
-                className={`
-                  px-3 py-2 rounded text-sm font-semibold transition
-                  ${
-                    page === currentPage
-                      ? "bg-blue-600 text-white"
-                      : typeof page === "number"
-                      ? "bg-slate-700 text-white hover:bg-slate-600"
-                      : "bg-slate-800 text-gray-400 cursor-default"
-                  }
-                  ${
-                    typeof page !== "number"
-                      ? "disabled:cursor-not-allowed"
-                      : ""
-                  }
-                `}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          {/* Next Button */}
-          <button
-            onClick={() =>
-              setCurrentPage(Math.min(totalPages, currentPage + 1))
-            }
-            disabled={currentPage === totalPages}
-            className="px-3 py-2 rounded bg-slate-700 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition"
-          >
-            Next →
-          </button>
+              })}
+            </TableBody>
+          </Table>
         </div>
-      )}
-    </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="cursor-pointer bg-slate-700 border-slate-600 text-white hover:bg-slate-600 hover:text-white disabled:opacity-50"
+            >
+              ← Previous
+            </Button>
+
+            <div className="flex gap-1">
+              {getPageNumbers().map((page, idx) => (
+                <Button
+                  key={idx}
+                  variant={page === currentPage ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => typeof page === "number" && setCurrentPage(page)}
+                  disabled={typeof page !== "number"}
+                  className={`
+                    min-w-[36px]
+                    ${
+                      page === currentPage
+                        ? "cursor-pointer bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                        : "cursor-pointer bg-slate-700 border-slate-600 text-white hover:bg-slate-600 hover:text-white"
+                    }
+                    ${typeof page !== "number" ? "opacity-50 cursor-pointer hover:bg-slate-700" : ""}
+                  `}
+                >
+                  {page}
+                </Button>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="cursor-pointer bg-slate-700 border-slate-600 text-white hover:bg-slate-600 hover:text-white disabled:opacity-50"
+            >
+              Next →
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

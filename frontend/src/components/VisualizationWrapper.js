@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import VisualizationPanel from "./VisualizationPanel";
 import CircularGenomeView from "./CircularGenomeView";
+import { Button } from "./ui/button";
 
 export default function VisualizationWrapper({
   selectedSequence,
@@ -20,11 +21,9 @@ export default function VisualizationWrapper({
   const [dragStart, setDragStart] = useState(null);
   const svgRef = useRef(null);
 
-  // Use pinned feature if available, otherwise use hovered feature
   const activeFeature = pinnedFeature || hoveredFeature;
 
   const handleFeatureClick = (feature) => {
-    // Toggle pin state
     if (pinnedFeature?.id === feature.id) {
       setPinnedFeature(null);
     } else {
@@ -32,12 +31,11 @@ export default function VisualizationWrapper({
     }
   };
 
-  // Calculate visible window
   const viewLength = viewEnd - viewStart;
 
-  // Pan handlers
+
   const handleMouseDown = (e) => {
-    if (e.target.closest(".feature-element")) return; // Don't pan when clicking features
+    if (e.target.closest(".feature-element")) return;
     setIsDragging(true);
     setDragStart(e.clientX);
   };
@@ -123,35 +121,35 @@ export default function VisualizationWrapper({
 
           {/* Browser Controls */}
           <div className="flex items-center gap-2">
-            <button
+            <Button
               onClick={handleZoomIn}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold transition"
+              className="cursor-pointer px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold transition"
               title="Zoom In"
             >
               🔍+
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleZoomOut}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold transition"
+              className="cursor-pointer px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold transition"
               title="Zoom Out"
             >
               🔍-
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleResetView}
-              className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded text-sm font-semibold transition"
+              className="cursor-pointer px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded text-sm font-semibold transition"
               title="Reset View"
             >
               ↺ Reset
-            </button>
+            </Button>
             {activeFeature && (
-              <button
+              <Button
                 onClick={handleJumpToFeature}
-                className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm font-semibold transition"
+                className="cursor-pointer px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm font-semibold transition"
                 title="Jump to Selected Feature"
               >
                 → Jump
-              </button>
+              </Button>
             )}
           </div>
         </div>

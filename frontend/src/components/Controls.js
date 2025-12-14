@@ -24,7 +24,7 @@ export default function Controls({
             ))}
           </select>
         </div>
-        <div>
+        {/* <div>
           <label className="block text-white font-semibold mb-3">
             Zoom Level: {(zoomLevel * 100).toFixed(0)}%
           </label>
@@ -37,7 +37,7 @@ export default function Controls({
             onChange={(e) => onZoomChange(parseFloat(e.target.value))}
             className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

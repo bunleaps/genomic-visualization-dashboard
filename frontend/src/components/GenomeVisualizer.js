@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "./Header";
 import StatisticsCards from "./StatisticsCards";
 import Controls from "./Controls";
@@ -8,6 +8,7 @@ import SequenceComposition from "./SequenceComposition";
 import VisualizationWrapper from "./VisualizationWrapper";
 import DetailedStatistics from "./DetailedStatistics";
 import FeatureTable from "./FeatureTable";
+import { GenomeInputSection } from "./GenomeInputSection";
 
 export default function GenomeVisualizer() {
   const [genomeData, setGenomeData] = useState(null);
@@ -66,124 +67,11 @@ export default function GenomeVisualizer() {
     }
   };
 
-  if (error && !genomeData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8">
-        <div className="max-w-4xl mx-auto">
-          <Header />
-          <div className="bg-slate-800 rounded-lg p-8 border border-slate-700 mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Load Genome Data
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-300 mb-2 font-semibold">
-                  FASTA File URL (GitHub Raw Link)
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={inputUrl}
-                    onChange={(e) => setInputUrl(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="https://raw.githubusercontent.com/..."
-                    className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <button
-                    onClick={handleLoadFasta}
-                    disabled={loading}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold rounded transition-colors"
-                  >
-                    {loading ? "Loading..." : "Load"}
-                  </button>
-                </div>
-              </div>
-              {error && (
-                <div className="p-4 bg-red-900 border border-red-700 rounded text-red-200">
-                  <p className="font-semibold">Error:</p>
-                  <p>{error}</p>
-                </div>
-              )}
-              <p className="text-gray-400 text-sm">
-                Example:
-                https://raw.githubusercontent.com/bunleaps/genomic-visualization-dashboard/refs/heads/main/backend/test/NC_003198.1.fasta
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!genomeData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8">
-        <div className="max-w-4xl mx-auto">
-          <Header />
-          <div className="bg-slate-800 rounded-lg p-8 border border-slate-700 mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Load Genome Data
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-300 mb-2 font-semibold">
-                  FASTA File URL (GitHub Raw Link)
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={inputUrl}
-                    onChange={(e) => setInputUrl(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="https://raw.githubusercontent.com/..."
-                    className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <button
-                    onClick={handleLoadFasta}
-                    disabled={loading}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold rounded transition-colors"
-                  >
-                    {loading ? "Loading..." : "Load"}
-                  </button>
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm">
-                Example:
-                https://raw.githubusercontent.com/bunleaps/genomic-visualization-dashboard/refs/heads/main/backend/test/NC_003198.1.fasta
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Get unique sequences from data
-  const uniqueSeqs = genomeData.sequences
-    ? genomeData.sequences.map((s) => s.id).sort()
-    : [...new Set(genomeData.features.map((f) => f.seq_id))].sort();
-
-  // Get sequence metadata
-  const sequenceMetadata = genomeData.sequences
-    ? genomeData.sequences.find((s) => s.id === selectedSequence)
-    : null;
-
-  // Filter features for selected sequence
-  const selectedFeatures = genomeData.features.filter(
-    (f) => f.seq_id === selectedSequence
-  );
-
-  // Get sequence length
-  const sequenceLength = sequenceMetadata
-    ? sequenceMetadata.length
-    : genomeData.sequence_length;
-
-  // Function to calculate pixel position
   const getPixelPosition = (position) => {
-    return (position / sequenceLength) * 800;
+    const len = sequenceMetadata ? sequenceMetadata.length : genomeData?.sequence_length || 1000;
+    return (position / len) * 800;
   };
 
-  // Function to get color based on feature type
   const getFeatureColor = (type) => {
     const colors = {
       gene: "#3b82f6",
@@ -198,14 +86,49 @@ export default function GenomeVisualizer() {
     return colors[type] || "#6b7280";
   };
 
-  // Function to get y position based on strand and feature index
   const getYPosition = (strand, featureIndex) => {
     const rowHeight = 40;
     const baseY = strand === "+" ? 50 : 130;
     return baseY + Math.floor(featureIndex / 3) * rowHeight;
   };
 
-  // Calculate statistics for selected sequence
+  // No Data Rendering (Conditional)
+  if (!genomeData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8">
+        <div className="max-w-4xl mx-auto">
+          <Header />
+          <GenomeInputSection 
+            inputUrl={inputUrl}
+            setInputUrl={setInputUrl}
+            handleLoadFasta={handleLoadFasta}
+            loading={loading}
+            error={error}
+            handleKeyPress={handleKeyPress}
+            title={error ? "Error Loading Genome" : "Load Genome Data"}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Data Rendering
+  const uniqueSeqs = genomeData.sequences
+    ? genomeData.sequences.map((s) => s.id).sort()
+    : [...new Set(genomeData.features.map((f) => f.seq_id))].sort();
+
+  const sequenceMetadata = genomeData.sequences
+    ? genomeData.sequences.find((s) => s.id === selectedSequence)
+    : null;
+
+  const selectedFeatures = genomeData.features.filter(
+    (f) => f.seq_id === selectedSequence
+  );
+
+  const sequenceLength = sequenceMetadata
+    ? sequenceMetadata.length
+    : genomeData.sequence_length;
+
   const calculateStats = () => {
     const geneFeatures = selectedFeatures.filter((f) => f.type === "gene");
     const cdsFeatures = selectedFeatures.filter((f) => f.type === "CDS");
@@ -237,46 +160,45 @@ export default function GenomeVisualizer() {
       <div className="max-w-7xl mx-auto">
         <Header />
 
-        {/* URL Input Section */}
-        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 mb-8">
-          <h3 className="text-lg font-bold text-white mb-4">
-            Load Different Genome
-          </h3>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={inputUrl}
-              onChange={(e) => setInputUrl(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="https://raw.githubusercontent.com/..."
-              className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            />
-            <button
-              onClick={handleLoadFasta}
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold rounded transition-colors"
-            >
-              {loading ? "Loading..." : "Load"}
-            </button>
-          </div>
-          {error && (
-            <div className="mt-4 p-4 bg-red-900 border border-red-700 rounded text-red-200">
-              <p className="font-semibold">Error:</p>
-              <p>{error}</p>
-            </div>
-          )}
-        </div>
+        {/* Reusing the same component, but with a different title */}
+        <GenomeInputSection 
+            inputUrl={inputUrl}
+            setInputUrl={setInputUrl}
+            handleLoadFasta={handleLoadFasta}
+            loading={loading}
+            error={error}
+            handleKeyPress={handleKeyPress}
+            title="Load Different Genome"
+        />
 
+        {/* dna-themed loading sequence */}
         {loading && (
-          <div className="text-center text-gray-400 py-12">
-            <div className="inline-block">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              <p className="mt-4">Loading genome data...</p>
+          <div className="flex flex-col items-center justify-center py-12 min-h-[200px]">
+            <div className="relative flex h-16 w-48 justify-between items-center">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="relative flex h-full flex-col justify-between">
+                  <div
+                    className="h-3 w-3 rounded-full bg-blue-500 dna-oscillate shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  ></div>
+                  <div 
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px] h-full bg-slate-700/30"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  />
+                  <div
+                    className="h-3 w-3 rounded-full bg-cyan-400 dna-oscillate-reverse shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  ></div>
+                </div>
+              ))}
             </div>
+            <p className="mt-6 text-gray-300 font-medium animate-pulse uppercase tracking-wider text-sm">
+              Sequencing Data...
+            </p>
           </div>
         )}
 
-        {!loading && genomeData && (
+        {!loading && (
           <>
             <StatisticsCards
               stats={stats}
