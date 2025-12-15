@@ -1,8 +1,8 @@
-# Genome Visualizer
+# Genome Visualization Dashboard Frontend
 
 ## Project Overview
 
-Genome Visualizer is an interactive web-based dashboard designed for the exploration and analysis of genomic data. The application processes FASTA files to provide a dual-view visualization (linear and circular) of genomic features, alongside detailed statistical analysis of sequence composition, gene distribution, and nucleotide properties.
+Genome Visualization Dashboard is an interactive web-based dashboard designed for the exploration and analysis of genomic data. The application processes FASTA files to provide a dual-view visualization (linear and circular) of genomic features, alongside detailed statistical analysis of sequence composition, gene distribution, and nucleotide properties.
 
 ## Key Features
 
