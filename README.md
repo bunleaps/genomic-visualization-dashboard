@@ -4,12 +4,40 @@ Genome Visualization Dashboard is a web-based application for interactive explor
 
 ## Project Structure
 
-This repository is organized as a monorepo with separate frontend and backend components:
+This repository consists of separate frontend and backend components:
 
-genomic-visualization-dashboard/  
-├── frontend/ # Web client (UI and visualizations)  
-└── backend/ # API and genomic data processing
-
+/genomic-visualization-dashboard  
+├── backend/ # Python-based API  
+│ ├── controllers/ # Logic for handling API requests  
+│ ├── test/ # Backend unit tests  
+│ ├── test_genomes/ # 50 FASTA files for benchmarking  
+│ ├── .gitignore  
+│ ├── .python-version  
+│ ├── README.md # Backend-specific documentation  
+│ ├── benchmark.py # Script for evaluating performance  
+│ ├── main.py # Main entry point for the backend server  
+│ ├── performance_metrics.csv # Output data from benchmarks  
+│ ├── pyproject.toml # Project metadata and dependencies  
+│ ├── sequences_fetcher.py # Logic to fetch genomic sequences  
+│ └── uv.lock # Lock file for uv package manager  
+│  
+├── frontend/ # Next.js application  
+│ ├── public/ # Static assets served by Next.js  
+│ ├── screenshots/ # UI screenshots  
+│ ├── src/ # Main frontend source code  
+│ ├── .gitignore  
+│ ├── README.md # Frontend-specific documentation  
+│ ├── biome.json # Biome linter/formatter configuration  
+│ ├── components.json # shadcn/ui components configuration  
+│ ├── jsconfig.json # JavaScript path aliases  
+│ ├── next.config.mjs # Next.js configuration  
+│ ├── package-lock.json  
+│ ├── package.json # Frontend dependencies  
+│ └── postcss.config.mjs # PostCSS (Tailwind CSS) configuration  
+│  
+├── README.md # Root documentation  
+└── package-lock.json  
+  
 ## Frontend
 
 The frontend is a React-based web application built with Next.js. It provides the user interface for loading genomic data, interacting with genome visualizations, and viewing analytical results.
